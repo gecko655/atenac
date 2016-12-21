@@ -36,7 +36,8 @@ class TableParser
   class CSV < Base
     def each_row(&block)
       require "csv"
-      lines = source_string.force_encoding("Shift_JIS").encode("UTF-8")
+      #lines = source_string.force_encoding("Shift_JIS").encode("UTF-8")
+      lines = source_string.encode("UTF-8")
 
       ::CSV.parse(lines, :headers => true) do |row|
         yield Address.new(row.to_hash)
