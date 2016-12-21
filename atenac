@@ -373,7 +373,7 @@ __END__
       \end{adjustbox}
     \end{minipage}}}
 
-\def\atenaentry#1#2#3{#1 & \hbox{\hspace{0.5zw}} & #2 & \hbox{\kanjiskip=0pt #3}\\}
+\def\atenaentry#1#2#3{#1 & \hbox{\hspace{0.5zw}} & #2 & \hbox{\kanjiskip=0pt #3}\vspace{0.1zh}\\}
 
 % ################
 % # framebox for debug
