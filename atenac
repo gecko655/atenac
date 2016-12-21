@@ -18,8 +18,8 @@ class TableParser
       end
 
     parser.each_row do |address|
-      address_book << address if address.action == "出"
-      address_book.me = address if address.action == "自"
+      address_book << address #if address.action == "出"
+      #address_book.me = address if address.action == "自"
     end
 
     return address_book
@@ -67,8 +67,9 @@ class TableParser
 end # class Table
 
 class Address
-  [:last_name, :first_name, :title, :family_names,
-   :zip, :address1, :address2, :action].each do |m|
+  #[:last_name, :first_name, :title, :family_names,
+  # :zip, :address1, :address2, :action].each do |m|
+  %i(last_name_f first_name_f family_names_f zip_f address1_f address2_f last_name_t first_name_t title_t family_names_t zip_t address1_t address2_t).each do |m|
     self.class_eval("def #{m}; @columns['#{m.to_s}']; end")
   end
 
@@ -82,11 +83,15 @@ class Address
     string = string.gsub(/[ー「」．。]/, "\\pbox<z>{\\0}") if rotate
     return string
   end
+  def atena_from()
+    atena(last_name_f,first_name_f,"",family_names_f,zip_f,address1_f,"")
+  end
+  def atena_to(default_title = "様")
+    title = title_t || default_title
+    atena(last_name_t,first_name_t,title,family_names_t,zip_t,address1_t,address2_t)
+  end
 
-  def atena(default_title = "様")
-    title = self.title.to_s
-    title = default_title if !title || title == ""
-
+  def atena(last_name,first_name,title,family_names,zip,address1,address2)
     atena_string = atena_entry(last_name, first_name, title)
     return atena_string if family_names.to_s == ""
 
@@ -94,7 +99,7 @@ class Address
       if fn =~ /(.*);(.*)/
         fn, fn_title = $1, $2
       else
-        fn, fn_title = fn, default_title
+        fn, fn_title = fn, title
       end
       atena_string += atena_entry("", fn, fn_title)
     end
@@ -410,12 +415,6 @@ __END__
       \end{flushright}
     \end{minipage}}}
 
-\def\senderaddress{
-  <%- if me = address_book.me -%>
-  \senderzip <%= me.zip %>
-  \sender{<%= me.texify(me.address1, $OPT_ROTATE) %>}{<%= me.atena("") %>}
-  <%- end -%>
-}
 
 % ################
 % # sender zip
@@ -451,7 +450,6 @@ __END__
   \noindent
   \begin{picture}(100,148)(\xoffset,\yoffset)
   \debugframe
-  \senderaddress
   #1
   \end{picture}
   \newpage
@@ -464,9 +462,11 @@ __END__
 \begin{document}
 <%- address_book.each do |address| -%>
   \hagaki{
-    \zip <%= address.zip %>
-    \addr{<%= address.texify(address.address1, $OPT_ROTATE) %>}{<%= address.texify(address.address2, $OPT_ROTATE) %>}
-    \atena{<%= address.atena %>}}
+    \senderzip <%= address.zip_f %>
+    \sender{<%= address.texify(address.address1_f, $OPT_ROTATE) %>}{<%= address.atena_from %>}
+    \zip <%= address.zip_t %>
+    \addr{<%= address.texify(address.address1_t, $OPT_ROTATE) %>}{<%= address.texify(address.address2_t, $OPT_ROTATE) %>}
+    \atena{<%= address.atena_to %>}}
 
 <%- end -%>
 \end{document}
