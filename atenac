@@ -87,7 +87,7 @@ class Address
     atena(last_name_f,first_name_f,"",family_names_f,zip_f,address1_f,"")
   end
   def atena_to(default_title = "様")
-    title = title_t || default_title
+    title = title_t!="" ? title_t : default_title
     atena(last_name_t,first_name_t,title,family_names_t,zip_t,address1_t,address2_t)
   end
 
